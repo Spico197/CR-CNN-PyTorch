@@ -102,3 +102,9 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# self-designed
+.vscode/
+best_model.*
+dev.txt
+train.txt
