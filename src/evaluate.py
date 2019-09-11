@@ -20,7 +20,7 @@ def evaluate(model, test_loader, device, prc=False, report=False):
             pos1 = pos1.to(device)
             pos2 = pos2.to(device)
 
-            outputs = model(tokens, pos1, pos2)
+            outputs = model(tokens, pos1, pos2, torch.device('cpu'))
             scores, predicted = torch.max(outputs.data, -1)
 
             scores = scores.to(torch.device('cpu'))

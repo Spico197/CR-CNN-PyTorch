@@ -29,7 +29,7 @@ class CRCNNModel(nn.Module):
         self.max_pool = nn.MaxPool1d(MAX_SENT_LEN, 1)
         self.dropout = nn.Dropout(p=DROPOUT_RATE)
     
-    def forward(self, tokens, pos1, pos2):
+    def forward(self, tokens, pos1, pos2, device):
         word_embedding_layer = self.word_embedding(tokens)
         pos1_embedding_layer = self.pos_embedding(pos1)
         pos2_embedding_layer = self.pos_embedding(pos2)
@@ -42,20 +42,21 @@ class CRCNNModel(nn.Module):
 
         scope = np.sqrt(6/(len(self.rel2id) + FILTER_NUM))
         W_classes = torch.tensor(np.random.uniform(-scope, scope, (FILTER_NUM, len(self.rel2id))), 
-                                    requires_grad=True, dtype=out.dtype, device=DEVICE)
+                                    requires_grad=True, dtype=out.dtype, device=device)
         out = out.mm(W_classes) # dimension: BATCH_SIZE*len(self.rel2id)
         return out
 
 
 class RankingLoss(nn.Module):
-    def __init__(self, rel2id,):
+    def __init__(self, rel2id):
         super(RankingLoss, self).__init__()
         self.rel2id = rel2id
+        self.device = device
         self.margin_positive = MARGIN_POSITIVE
         self.margin_negative = MARGIN_NEGATIVE
         self.gamma = GAMMA_SCALING_FACTOR
 
-    def forward(self, scores, ground_true_labels):
+    def forward(self, scores, ground_true_labels, device):
         ground_true_labels = ground_true_labels.view(BATCH_SIZE, -1)
         scores_positive = scores[:, ground_true_labels.tolist()[0]]
         loss_positive = torch.log(1.0 + torch.exp(self.gamma * ( self.margin_positive - scores_positive )))
@@ -65,9 +66,11 @@ class RankingLoss(nn.Module):
         ss = scores.tolist()
         for i in range(len(ss)):
             ss[i].remove(sp[i])
-        sn = torch.tensor(ss, dtype=scores_positive.dtype, requires_grad=True, device=DEVICE)
+        sn = torch.tensor(ss, dtype=scores_positive.dtype, requires_grad=True, device=device)
         scores_negative, _ = torch.max(sn, dim=-1)
         scores_negative[(ground_true_labels == self.rel2id['Other']).tolist()[0]] = 0.0
         loss_negative = torch.log(1.0 + torch.exp(self.gamma * ( self.margin_negative + scores_negative )))
-        loss = torch.mean(loss_positive + loss_negative)
+        loss = torch.mean(loss_positive)
+        # loss = torch.mean(loss_positive + loss_negative)
+        # loss = torch.mean(loss_negative)
         return loss
