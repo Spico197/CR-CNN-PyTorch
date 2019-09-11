@@ -26,7 +26,6 @@ class CRCNNModel(nn.Module):
             padding = int(pads)
         self.conv = nn.Conv1d(WORD_EMBEDDING_DIM + 2*POS_EMBEDDING_DIM, FILTER_NUM, KERNEL_SIZE, padding=padding)
         self.max_pool = nn.MaxPool1d(MAX_SENT_LEN, 1)
-        self.dropout = nn.Dropout(p=DROPOUT_RATE)
     
     def forward(self, tokens, pos1, pos2):
         word_embedding_layer = self.word_embedding(tokens)
@@ -68,7 +67,5 @@ class RankingLoss(nn.Module):
         scores_negative, _ = torch.max(sn, dim=-1)
         scores_negative[(ground_true_labels == self.rel2id['Other']).tolist()[0]] = 0.0
         loss_negative = torch.log(1.0 + torch.exp(self.gamma * ( self.margin_negative + scores_negative )))
-        loss = torch.mean(loss_positive)
-        # loss = torch.mean(loss_positive + loss_negative)
-        # loss = torch.mean(loss_negative)
+        loss = torch.mean(loss_positive + loss_negative)
         return loss
