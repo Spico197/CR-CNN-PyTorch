@@ -17,7 +17,6 @@ class CRCNNModel(nn.Module):
     def __init__(self, word_vectors, rel2id):
         super(CRCNNModel, self).__init__()
         self.rel2id = rel2id
-
         self.word_embedding = nn.Embedding.from_pretrained(word_vectors, freeze=True)
         self.pos_embedding = nn.Embedding(MAX_SENT_LEN*2, POS_EMBEDDING_DIM)
         pads = (KERNEL_SIZE-1)/2
@@ -51,7 +50,6 @@ class RankingLoss(nn.Module):
     def __init__(self, rel2id):
         super(RankingLoss, self).__init__()
         self.rel2id = rel2id
-        self.device = device
         self.margin_positive = MARGIN_POSITIVE
         self.margin_negative = MARGIN_NEGATIVE
         self.gamma = GAMMA_SCALING_FACTOR
