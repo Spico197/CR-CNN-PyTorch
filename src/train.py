@@ -35,8 +35,8 @@ if __name__ == "__main__":
             label = label.to(DEVICE)
 
             optimizer.zero_grad()
-            outputs = model(tokens, pos1, pos2, DEVICE)
-            loss = criterion(outputs, label, DEVICE)
+            outputs = model(tokens, pos1, pos2)
+            loss = criterion(outputs, label)
             loss.backward()
             optimizer.step()
 

@@ -29,7 +29,7 @@ class CRCNNModel(nn.Module):
         self.max_pool = nn.MaxPool1d(MAX_SENT_LEN, 1)
         self.dropout = nn.Dropout(p=DROPOUT_RATE)
     
-    def forward(self, tokens, pos1, pos2, device):
+    def forward(self, tokens, pos1, pos2):
         word_embedding_layer = self.word_embedding(tokens)
         pos1_embedding_layer = self.pos_embedding(pos1)
         pos2_embedding_layer = self.pos_embedding(pos2)
@@ -42,7 +42,7 @@ class CRCNNModel(nn.Module):
 
         scope = np.sqrt(6/(len(self.rel2id) + FILTER_NUM))
         W_classes = torch.tensor(np.random.uniform(-scope, scope, (FILTER_NUM, len(self.rel2id))), 
-                                    requires_grad=True, dtype=out.dtype, device=device)
+                                    requires_grad=True, dtype=out.dtype, device=DEVICE)
         out = out.mm(W_classes) # dimension: BATCH_SIZE*len(self.rel2id)
         return out
 
@@ -56,7 +56,7 @@ class RankingLoss(nn.Module):
         self.margin_negative = MARGIN_NEGATIVE
         self.gamma = GAMMA_SCALING_FACTOR
 
-    def forward(self, scores, ground_true_labels, device):
+    def forward(self, scores, ground_true_labels):
         ground_true_labels = ground_true_labels.view(BATCH_SIZE, -1)
         scores_positive = scores[:, ground_true_labels.tolist()[0]]
         loss_positive = torch.log(1.0 + torch.exp(self.gamma * ( self.margin_positive - scores_positive )))
@@ -66,7 +66,7 @@ class RankingLoss(nn.Module):
         ss = scores.tolist()
         for i in range(len(ss)):
             ss[i].remove(sp[i])
-        sn = torch.tensor(ss, dtype=scores_positive.dtype, requires_grad=True, device=device)
+        sn = torch.tensor(ss, dtype=scores_positive.dtype, requires_grad=True, device=DEVICE)
         scores_negative, _ = torch.max(sn, dim=-1)
         scores_negative[(ground_true_labels == self.rel2id['Other']).tolist()[0]] = 0.0
         loss_negative = torch.log(1.0 + torch.exp(self.gamma * ( self.margin_negative + scores_negative )))
