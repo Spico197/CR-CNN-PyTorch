@@ -26,6 +26,10 @@ class CRCNNModel(nn.Module):
             padding = int(pads)
         self.conv = nn.Conv1d(WORD_EMBEDDING_DIM + 2*POS_EMBEDDING_DIM, FILTER_NUM, KERNEL_SIZE, padding=padding)
         self.max_pool = nn.MaxPool1d(MAX_SENT_LEN, 1)
+
+        scope = np.sqrt(6/(len(self.rel2id) + FILTER_NUM))
+        self.W_classes = torch.tensor(np.random.uniform(-scope, scope, (FILTER_NUM, len(self.rel2id))), 
+                                    requires_grad=True, dtype=torch.float, device=DEVICE)
     
     def forward(self, tokens, pos1, pos2):
         word_embedding_layer = self.word_embedding(tokens)
@@ -37,11 +41,7 @@ class CRCNNModel(nn.Module):
         out = F.tanh(out)
         out = self.max_pool(out)
         out = out.view(-1, FILTER_NUM)
-
-        scope = np.sqrt(6/(len(self.rel2id) + FILTER_NUM))
-        W_classes = torch.tensor(np.random.uniform(-scope, scope, (FILTER_NUM, len(self.rel2id))), 
-                                    requires_grad=True, dtype=out.dtype, device=DEVICE)
-        out = out.mm(W_classes) # dimension: BATCH_SIZE*len(self.rel2id)
+        out = out.mm(self.W_classes) # dimension: BATCH_SIZE*len(self.rel2id)
         return out
 
 

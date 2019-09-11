@@ -16,7 +16,8 @@ if __name__ == "__main__":
 
     model = CRCNNModel(torch.tensor(word_vectors, dtype=torch.float32), rel2id)
     optimizer = optim.SGD(model.parameters(), lr=LEARNING_RATE, weight_decay=L2_WEIGHT_DECAY)
-    criterion = RankingLoss(rel2id)
+    # criterion = RankingLoss(rel2id)
+    criterion = nn.CrossEntropyLoss()
 
     model.to(DEVICE)
     criterion.to(DEVICE)
