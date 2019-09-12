@@ -1,5 +1,9 @@
 # CR-CNN-PyTorch
-A CR-CNN Relation Classification model implementation via PyTorch
+An **Un-official** CR-CNN Relation Classification model implementation via PyTorch. 
+
+CR-CNN is a model proposed by CN Santos. The full paper can be found at below:
+
+- [[Paper](https://www.aclweb.org/anthology/P15-1061)] dos Santos, Cicero, Bing Xiang, and Bowen Zhou. "Classifying Relations by Ranking with Convolutional Neural Networks." *Proceedings of the 53rd Annual Meeting of the Association for Computational Linguistics and the 7th International Joint Conference on Natural Language Processing (Volume 1: Long Papers)*. 2015.
 
 ## Usage
 If GPU resource is needed, you can set the `GPU_DEVICE_NUM` in `local_config.py` file.
