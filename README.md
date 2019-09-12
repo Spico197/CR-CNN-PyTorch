@@ -6,6 +6,9 @@ If GPU resource is needed, you can set the `GPU_DEVICE_NUM` in `local_config.py`
 If you are using GPU to train, then the device in `test.py` must be set to `GPU` too.
 
 ## Results
+
+### WordEmbedding: 50 & Pos Embedding: 5
+
 A middle result in training set shows that the model is overfitted, but it has a strong ability to fit with fast training process. So if you can finetune the model (probabily the position embedding dimension) or use a more powerful pretrained embedding, the result will grow better.
 ```
  [99,   120] AVG-Loss: 0.7125 - TRAIN >>> ACC: 0.8539, Precision: 0.8539, Recall: 0.8539, F1-micro: 0.8539, F1-macro: 0.7998
@@ -44,4 +47,41 @@ TEST >>> ACC: 0.6651, Precision: 0.6651, Recall: 0.6651, F1-micro: 0.6651, F1-ma
 
 TEST >>> AUC: 0.8681
 ```
-![PRC](result/test_prc.png)
+![50-5](result/test_prc50.png)
+
+### Word Embedding: 300 & Pos Embedding: 100
+
+```
+word_vectors : 300 21772
+                           precision    recall  f1-score   support
+
+      Cause-Effect(e2,e1)     0.8776    0.8866    0.8821       194
+      Cause-Effect(e1,e2)     0.9435    0.8731    0.9070       134
+ Content-Container(e2,e1)     0.8000    0.6154    0.6957        39
+ Content-Container(e1,e2)     0.7514    0.8693    0.8061       153
+  Product-Producer(e2,e1)     0.7282    0.6098    0.6637       123
+ Member-Collection(e2,e1)     0.7778    0.9055    0.8368       201
+  Product-Producer(e1,e2)     0.7857    0.7130    0.7476       108
+                    Other     0.4525    0.4824    0.4670       454
+ Member-Collection(e1,e2)     0.7857    0.3438    0.4783        32
+ Instrument-Agency(e1,e2)     0.6667    0.0909    0.1600        22
+   Component-Whole(e2,e1)     0.6899    0.7267    0.7078       150
+Entity-Destination(e1,e2)     0.8173    0.8763    0.8458       291
+     Entity-Origin(e2,e1)     0.9000    0.7660    0.8276        47
+     Entity-Origin(e1,e2)     0.7709    0.8294    0.7991       211
+Entity-Destination(e2,e1)     0.0000    0.0000    0.0000         1
+ Instrument-Agency(e2,e1)     0.7500    0.6493    0.6960       134
+     Message-Topic(e1,e2)     0.8028    0.8333    0.8178       210
+     Message-Topic(e2,e1)     0.7879    0.5098    0.6190        51
+   Component-Whole(e1,e2)     0.8400    0.7778    0.8077       162
+
+                 accuracy                         0.7365      2717
+                macro avg     0.7330    0.6504    0.6718      2717
+             weighted avg     0.7400    0.7365    0.7331      2717
+
+TEST >>> ACC: 0.7365, Precision: 0.7365, Recall: 0.7365, F1-micro: 0.7365, F1-macro: 0.6718
+
+TEST >>> AUC: 0.9017
+```
+
+![300-100](result/test_prc.png)
